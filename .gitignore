@@ -2,6 +2,15 @@
 data/
 !data/.gitkeep
 
+# 环境变量与凭据：绝对不要提交（可能包含密钥、数据库密码、API Key）
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+credentials.json
+
 # Python
 .venv/
 venv/

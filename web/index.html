@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>企业后台管理系统</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+  <!-- 本地依赖，断网也能跑 -->
+  <link rel="stylesheet" href="/static/css/app.css">
+
+  <!--
+    页面级错误采集器：把 JS 报错和资源加载失败记到 #error-collector 里。
+    用途：无头浏览器（scripts/browser_test.py）跑自测时能把真实报错读出来，
+    平时也可以在控制台执行 document.getElementById('error-collector').textContent 查看。
+  -->
+  <script>
+    window.__cadminErrors = [];
+    window.__cadminBoot = 'pending';
+    (function () {
+      function record(kind, message, extra) {
+        window.__cadminErrors.push(kind + ': ' + message + (extra ? ' @ ' + extra : ''));
+        var box = document.getElementById('error-collector');
+        if (box) box.textContent = 'RENDER_ERRORS=' + JSON.stringify(window.__cadminErrors);
+      }
+      window.addEventListener('error', function (e) {
+        if (e.target && e.target.tagName && (e.target.src || e.target.href)) {
+          record('资源加载失败', e.target.tagName + ' ' + (e.target.src || e.target.href));
+        } else {
+          record('JS 错误', e.message || 'unknown',
+                 (e.filename || '') + ':' + (e.lineno || 0) + ':' + (e.colno || 0));
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) {
+        record('未处理的 Promise 拒绝', (e.reason && (e.reason.message || e.reason)) || 'unknown');
+      });
+      // 挂载成功后由 app.js 调用
+      window.__cadminMarkMounted = function () {
+        window.__cadminBoot = 'mounted';
+        var box = document.getElementById('error-collector');
+        if (box) box.textContent = 'BOOT_OK ' + box.textContent;
+      };
+      // 路由诊断：把导航结果写进 DOM，便于自测脚本定位"页面空白"的原因
+      window.__cadminRouteInfo = [];
+      window.__cadminLogRoute = function (text) {
+        window.__cadminRouteInfo.push(text);
+        var box = document.getElementById('error-collector');
+        if (box) box.textContent = 'ROUTE=' + JSON.stringify(window.__cadminRouteInfo) +
+          ' | ' + box.textContent;
+      };
+    })();
+  </script>
+
+  <script src="/static/vendor/vue.global.prod.js"></script>
+  <script src="/static/vendor/vue-router.global.prod.js"></script>
+  <script src="/static/vendor/echarts.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- 首屏加载占位，Vue 挂载后被替换 -->
+    <div class="boot-screen">
+      <div class="boot-spinner"></div>
+      <p>正在加载系统 ...</p>
+    </div>
+  </div>
+
+  <div id="toast-host" class="toast-host"></div>
+  <div id="modal-host"></div>
+  <pre id="error-collector" style="display:none"></pre>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/utils.js"></script>
+  <script src="/static/js/components.js"></script>
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/pages/dashboard.js"></script>
+  <script src="/static/js/pages/employees.js"></script>
+  <script src="/static/js/pages/departments.js"></script>
+  <script src="/static/js/pages/projects.js"></script>
+  <script src="/static/js/pages/reports.js"></script>
+  <script src="/static/js/pages/attendance.js"></script>
+  <script src="/static/js/pages/leaves.js"></script>
+  <script src="/static/js/pages/announcements.js"></script>
+  <script src="/static/js/pages/logs.js"></script>
+  <script src="/static/js/pages/profile.js"></script>
+  <script src="/static/js/pages/accounts.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
